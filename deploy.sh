@@ -1,8 +1,7 @@
 #!/bin/bash
 
-set -e  # Interrompe lo script se un comando fallisce
+set -e 
 
-# Colori per output
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 RED='\033[0;31m'
@@ -27,7 +26,6 @@ else
     echo -e "${GREEN}Swarm è già attivo su questa macchina.${NC}"
 fi
 
-# Costruisci l'immagine Docker
 echo -e "${YELLOW}Costruendo l'immagine Docker...${NC}"
 docker build -t ${APP_NAME}:latest . || {
     echo -e "${RED}Errore durante la build dell'immagine Docker${NC}"
@@ -35,7 +33,6 @@ docker build -t ${APP_NAME}:latest . || {
 }
 echo -e "${GREEN}Immagine Docker costruita con successo!${NC}"
 
-# Crea o aggiorna il file docker-compose.yml
 echo -e "${YELLOW}Generando il file docker-compose.yml...${NC}"
 cat > docker-compose.yml << EOF
 services:
@@ -57,7 +54,6 @@ services:
 EOF
 echo -e "${GREEN}File docker-compose.yml generato con successo!${NC}"
 
-# Deployment su Swarm
 echo -e "${YELLOW}Rimuovendo stack precedente se esistente...${NC}"
 docker stack rm ${STACK_NAME} 2>/dev/null || true
 
@@ -67,7 +63,6 @@ while docker stack ls | grep -q ${STACK_NAME}; do
     sleep 1
 done
 
-# Attendi che le reti vengano pulite
 while docker network ls | grep -q "${STACK_NAME}_"; do
     echo -e "${YELLOW}Attendere pulizia reti...${NC}"
     sleep 3
@@ -81,17 +76,15 @@ docker stack deploy -c docker-compose.yml ${STACK_NAME} || {
 
 echo -e "${GREEN}Stack deployato con successo!${NC}"
 
-# Verifica lo stato del servizio
 echo -e "${YELLOW}Verifica dello stato del servizio...${NC}"
 echo "Attendere mentre i servizi vengono avviati..."
-sleep 10  # Attesa per dare tempo ai servizi di avviarsi
+sleep 10
 
 docker service ls | grep ${STACK_NAME}
 echo ""
 echo -e "${YELLOW}Visualizzazione dei container in esecuzione:${NC}"
 docker stack ps ${STACK_NAME}
 
-# Informazioni finali
 echo ""
 echo -e "${GREEN}=== DEPLOYMENT COMPLETATO ===${NC}"
 echo "L'applicazione è ora disponibile su http://localhost:3000"
