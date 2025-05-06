@@ -1,0 +1,1 @@
+siege -c100 -t60S http://0.0.0.0:3000/info
