@@ -7,12 +7,18 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: swarm-app
-  minReplicas: 6   # Questo dovrebbe corrispondere al numero di CPU
-  maxReplicas: 20  # Questo può essere un multiplo del numero di CPU
+  minReplicas: 10
+  maxReplicas: 100
   metrics:
   - type: Resource
     resource:
       name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
       target:
         type: Utilization
         averageUtilization: 70
