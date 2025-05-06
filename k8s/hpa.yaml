@@ -1,0 +1,18 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: swarm-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: swarm-app
+  minReplicas: 6   # Questo dovrebbe corrispondere al numero di CPU
+  maxReplicas: 20  # Questo può essere un multiplo del numero di CPU
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70

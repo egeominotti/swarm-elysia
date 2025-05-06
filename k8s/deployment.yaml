@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: swarm-app
+spec:
+  selector:
+    matchLabels:
+      app: swarm-app
+  template:
+    metadata:
+      labels:
+        app: swarm-app
+    spec:
+      containers:
+      - name: swarm-app
+        image: egeominotti/swarm-app:latest
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            memory: "512Mi"
