@@ -6,7 +6,7 @@ spec:
   selector:
     app: swarm-app
   ports:
-  - port: 3000        # Porta del servizio cambiata da 80 a 3000
-    targetPort: 3000  # Porta del container rimane 3000
-    nodePort: 30000   # Specificare una porta fissa tra 30000-32767
+  - port: 3000        
+    targetPort: 3000 
+    nodePort: 30000
   type: NodePort

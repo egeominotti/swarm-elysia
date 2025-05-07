@@ -29,7 +29,6 @@ const app = new Elysia({
   })
   .listen(3000);
 
-// Stampa informazioni dettagliate all'avvio del server
 const envDetails = getFilteredEnv();
 const k8sInfo = isKubernetes()
   ? `Running in Kubernetes cluster (Service: ${
@@ -71,8 +70,6 @@ function isKubernetes() {
 }
 
 function getFilteredEnv() {
-  // Filtra e restituisce solo le variabili d'ambiente che potrebbero essere utili
-  // ma esclude eventuali informazioni sensibili
   const envVars = {};
   const safeEnvVars = [
     "NODE_ENV",

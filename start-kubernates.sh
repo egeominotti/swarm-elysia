@@ -1,15 +1,12 @@
 #!/bin/bash
 
-# Script per gestire il deployment Kubernetes
 
-# Colori per l'output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-# Menu principale
 echo -e "${BLUE}===== KUBERNETES MANAGER =====${NC}"
 echo -e "${YELLOW}1) Aggiorna deployment${NC}"
 echo -e "${YELLOW}2) Visualizza stato dei pod${NC}"
@@ -74,18 +71,15 @@ case $option in
   8)
     echo -e "${BLUE}Build e aggiornamento immagine Docker...${NC}"
     
-    # Impostazioni per l'immagine
     read -p "Inserisci il nome dell'immagine (default: egeominotti/swarm-app): " image_name
     image_name=${image_name:-egeominotti/swarm-app}
     
     read -p "Inserisci il tag dell'immagine (default: latest): " image_tag
     image_tag=${image_tag:-latest}
     
-    # Percorso del Dockerfile
     read -p "Inserisci il percorso del Dockerfile (default: .): " dockerfile_path
     dockerfile_path=${dockerfile_path:-.}
     
-    # Build dell'immagine
     echo -e "${YELLOW}Costruzione dell'immagine Docker...${NC}"
     docker build -t $image_name:$image_tag $dockerfile_path
     
@@ -94,7 +88,6 @@ case $option in
         exit 1
     fi
     
-    # Push dell'immagine
     echo -e "${YELLOW}Vuoi eseguire il push dell'immagine su Docker Hub? (y/n): ${NC}"
     read push_confirm
     
@@ -109,7 +102,6 @@ case $option in
         fi
     fi
     
-    # Aggiornamento del deployment
     echo -e "${YELLOW}Seleziona metodo di aggiornamento:${NC}"
     echo "1) Imposta nuova immagine (set image)"
     echo "2) Riavvia deployment (rollout restart)"
