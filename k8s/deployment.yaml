@@ -3,6 +3,12 @@ kind: Deployment
 metadata:
   name: swarm-app
 spec:
+  replicas: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: swarm-app
@@ -14,6 +20,7 @@ spec:
       containers:
       - name: swarm-app
         image: egeominotti/swarm-app:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
         resources:
@@ -22,3 +29,15 @@ spec:
             memory: "128Mi"
           limits:
             memory: "512Mi"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 20

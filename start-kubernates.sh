@@ -18,7 +18,8 @@ echo -e "${YELLOW}4) Visualizza stato dell'HPA${NC}"
 echo -e "${YELLOW}5) Scala manualmente${NC}"
 echo -e "${YELLOW}6) Visualizza logs${NC}"
 echo -e "${YELLOW}7) Elimina tutto${NC}"
-echo -e "${YELLOW}8) Esci${NC}"
+echo -e "${YELLOW}8) Build e aggiorna immagine Docker${NC}"
+echo -e "${YELLOW}9) Esci${NC}"
 
 read -p "Seleziona un'opzione: " option
 
@@ -71,6 +72,64 @@ case $option in
     ;;
     
   8)
+    echo -e "${BLUE}Build e aggiornamento immagine Docker...${NC}"
+    
+    # Impostazioni per l'immagine
+    read -p "Inserisci il nome dell'immagine (default: egeominotti/swarm-app): " image_name
+    image_name=${image_name:-egeominotti/swarm-app}
+    
+    read -p "Inserisci il tag dell'immagine (default: latest): " image_tag
+    image_tag=${image_tag:-latest}
+    
+    # Percorso del Dockerfile
+    read -p "Inserisci il percorso del Dockerfile (default: .): " dockerfile_path
+    dockerfile_path=${dockerfile_path:-.}
+    
+    # Build dell'immagine
+    echo -e "${YELLOW}Costruzione dell'immagine Docker...${NC}"
+    docker build -t $image_name:$image_tag $dockerfile_path
+    
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Errore durante la build dell'immagine!${NC}"
+        exit 1
+    fi
+    
+    # Push dell'immagine
+    echo -e "${YELLOW}Vuoi eseguire il push dell'immagine su Docker Hub? (y/n): ${NC}"
+    read push_confirm
+    
+    if [ "$push_confirm" = "y" ]; then
+        echo -e "${YELLOW}Esecuzione del push su Docker Hub...${NC}"
+        docker push $image_name:$image_tag
+        
+        if [ $? -ne 0 ]; then
+            echo -e "${RED}Errore durante il push dell'immagine!${NC}"
+            echo -e "${YELLOW}Assicurati di aver eseguito 'docker login' prima.${NC}"
+            exit 1
+        fi
+    fi
+    
+    # Aggiornamento del deployment
+    echo -e "${YELLOW}Seleziona metodo di aggiornamento:${NC}"
+    echo "1) Imposta nuova immagine (set image)"
+    echo "2) Riavvia deployment (rollout restart)"
+    read -p "Scelta: " update_method
+    
+    if [ "$update_method" = "1" ]; then
+        kubectl set image deployment/swarm-app swarm-app=$image_name:$image_tag
+        echo -e "${GREEN}Immagine aggiornata a $image_name:$image_tag${NC}"
+    elif [ "$update_method" = "2" ]; then
+        kubectl rollout restart deployment swarm-app
+        echo -e "${GREEN}Deployment riavviato, scaricherà la nuova immagine $image_name:$image_tag${NC}"
+    else
+        echo -e "${RED}Opzione non valida!${NC}"
+    fi
+    
+    echo -e "${BLUE}Monitoraggio aggiornamento...${NC}"
+    kubectl rollout status deployment/swarm-app
+    ;;
+    
+  9)
     echo -e "${GREEN}Arrivederci!${NC}"
     exit 0
     ;;
