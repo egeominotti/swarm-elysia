@@ -1,12 +1,10 @@
-# .github/workflows/docker-build-push.yml
-
 name: Docker Build and Push
 
 on:
   push:
-    branches: [main, master] # Trigger sui push ai branch principali
+    branches: [main, master]
   pull_request:
-    branches: [main, master] # Opzionale: build sui PR ma senza push
+    branches: [main, master]
 
 jobs:
   build-and-push:
